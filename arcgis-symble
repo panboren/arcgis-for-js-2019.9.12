@@ -1,0 +1,115 @@
+﻿Symbol
+
+//字体
+Font：type: "text", 用于显示2D文本符号和3D文本符号的字体。此类允许开发人员设置字体的族，装饰，大小，样式和权重属性。请注意每个属性的“已知限制”，以了解它们如何根据图层类型而有所不同，以及是否使用MapView或SceneView。
+
+******************************************************
+
+Subclasses: FillSymbol , LineSymbol , MarkerSymbol , Symbol3D , TextSymbol , WebStyleSymbol
+Symbol是所有符号的基类。符号将点，线，多边形和网格几何表示为视图中的矢量图形。符号只能在个别直接设置图形的GraphicsLayer或View.graphics。否则，它们将分配给应用于FeatureLayer或SceneLayer的渲染器。
+
+    par:Symbol
+            Subclasses: LabelSymbol3D , LineSymbol3D , MeshSymbol3D , PointSymbol3D , PolygonSymbol3D
+            Symbol3D是所有3D符号的基类。它用于在FeatureLayer中渲染2D 点，折线和多边形要素以及在SceneLayer中渲染 3D网格要素。必须在SceneView实例中使用所有3D符号; MapViews中不支持3D渲染。
+                    ------------------------------------
+                    //标签
+                    par:Symbol3D  Symbol
+                    LabelSymbol3D： type: "label-3d", 用于为3D SceneView中的FeatureLayer渲染要素的标签。2D MapViews不支持此符号类型。
+
+                    par:Symbol3D  Symbol
+                    LineSymbol3D： type: "line-3d",  type: "path",用于在3D SceneView中渲染具有折线几何的要素。2D MapViews不支持此符号类型。
+
+                    par:Symbol3D  Symbol
+                    MeshSymbol3D:  type: "simple", type: "mesh-3d",用于在3D SceneView中的SceneLayer中渲染3D网格特征。2D MapViews不支持此符号类型。
+
+                    par:Symbol3D
+                    PointSymbol3D:type: "point-3d", type: "object",用于在3D SceneView中使用Point几何体渲染要素。2D MapViews不支持此符号类型。
+
+                    par:Symbol3D
+                    PolygonSymbol3D: type: "polygon-3d",type: "extrude", 用于在3D SceneView中渲染具有多边形几何体的要素。2D MapViews不支持此符号类型。多边形特征也可以呈现为在每个多边形的质心处具有图标或对象的点。
+                   ------------------------------------
+
+    par:Symbol
+            WebStyleSymbol:type: "web-style",是一个用于方便地创建逼真和主题3D符号的类。它是创建PointSymbol3D对象的包装器，指向API中可用的Web样式资源。2D MapViews不支持此符号类型。
+
+    par:Symbol
+            TextSymbol: type: "text",用于定义用于在2D MapView中的FeatureLayer，CSVLayer，Sublayer和StreamLayer上显示标签的图形。如果几何类型是点或多点，则文本符号也可用于定义Graphic的符号属性。使用此类，您可以更改标签图形的颜色，字体，光晕和其他属性。
+
+    par:Symbol
+            Subclasses: PictureMarkerSymbol , SimpleMarkerSymbol
+            MarkerSymbol,标记符号用于在FeatureLayer中绘制Point图形或在2D MapView中绘制单个图形。要创建新的标记符号，请使用SimpleMarkerSymbol或PictureMarkerSymbol。标记符号可用于3D SceneView。但是，建议您使用PointSymbol3D。
+                    --------------------------------
+                par:MarkerSymbol
+                    PictureMarkerSymbol :type: "picture-marker",  使用图像在2D MapView或3D SceneView中渲染Point图形。一个URL必须指向有效的图像。PictureMarkerSymbols可以应用于FeatureLayer中的点要素或单个图形。下图描绘了一个FeatureLayer，其点要素使用PictureMarkerSymbol进行样式设置。
+
+                par: MarkerSymbol
+                    SimpleMarkerSymbol: type: "simple-marker",用于在MapView或SceneView中使用简单的形状和颜色渲染2D Point几何。它可以填充有固体颜色和具有可选的轮廓，其具有限定的SimpleLineSymbol。
+                    --------------------------------
+
+    par:Symbol
+            Subclasses: SimpleLineSymbol
+            LineSymbol：线符号用于在2D MapView中的FeatureLayer中绘制折线要素。
+                 --------------------------
+                 par:LineSymbol
+                    SimpleLineSymbol:type: "simple-line", 用于在2D MapView中渲染2D 折线几何。SimpleLineSymbol还用于渲染标记符号和填充符号的轮廓。
+
+                 --------------------------
+
+***************************************************************
+====================================================================
+Subclasses: ExtrudeSymbol3DLayer , FillSymbol3DLayer , IconSymbol3DLayer , LineSymbol3DLayer , ObjectSymbol3DLayer , PathSymbol3DLayer , TextSymbol3DLayer
+Symbol3DLayer用于定义使用3D符号渲染的点，折线，多边形和网格几何的可视化。3D符号仅可用于在3D SceneView中的FeatureLayer，SceneLayer或独立图形中渲染要素。2D MapViews中不支持3D符号。
+
+    par:Symbol3DLayer
+            ExtrudeSymbol3DLayer：type: "polygon-3d",  type: "extrude",用于通过从地面向上挤出多边形几何来渲染它们，从而创建一个3D体积对象。这是通过做PolygonSymbol3D在SceneView。MapView不支持3D符号。
+
+    par:Symbol3DLayer
+            FillSymbol3DLayer： type: "polygon-3d",用于在SceneView中渲染平面2D 多边形几何和3D体网格的曲面。MapView不支持3D符号。
+
+    par:Symbol3DLayer
+            IconSymbol3DLayer： type: "point-3d",用于在SceneView中使用带有PointSymbol3D的平面2D图标（例如圆形）渲染Point几何。MapView不支持3D符号。也可以使用IconSymbol3DLayers渲染多边形要素，但图标符号图层必须包含在PolygonSymbol3D中，而不是该场景中的PointSymbol3D。
+
+
+    par:Symbol3DLayer
+            LineSymbol3DLayer： type: "line-3d", type: "line", 在3D SceneView中使用带有LineSymbol3D的平面2D线渲染折线几何。MapView不支持3D符号。
+
+    par:Symbol3DLayer
+            ObjectSymbol3DLayer: type: "point-3d",type: "object",用于在SceneView中使用带有PointSymbol3D的体积3D形状（例如，球体或圆柱体）渲染点几何。MapView不支持3D符号。也可以使用ObjectSymbol3DLayers渲染多边形要素，但对象符号图层必须包含在PolygonSymbol3D中，而不是此场景中的PointSymbol3D。
+
+    par:Symbol3DLayer
+            PathSymbol3DLayer :type: "line-3d",type: "path", 在SceneView中使用带有LineSymbol3D的体积3D管渲染折线几何。MapView不支持3D符号。
+
+    par:Symbol3DLayer
+            TextSymbol3DLayer: type: "label-3d",用于为任何几何类型的要素绘制文本标签。这通常通过将其添加到3D SceneView中的LabelSymbol3D来完成。MapView不支持3D符号。
+
+====================================================================
+//////////////////////////////////////////////////////////////////////
+
+Subclasses: PictureFillSymbol，SimpleFillSymbol
+FillSymbol： type: "simple-fill", 填充符号用于在GraphicsLayer中绘制多边形图形或在2D MapView中绘制FeatureLayer。要创建新的填充符号，请使用SimpleFillSymbol或PictureFillSymbol。
+    -------------------------------
+    par:FillSymbol
+        PictureFillSymbol: type: "picture-fill",  使用重复图案中的图像来对2D MapView中的面要素进行符号化。一个URL必须指向有效的图像。此外，符号可以有一个可选的轮廓，由SimpleLineSymbol定义。PictureFillSymbols可以应用于FeatureLayer或单个Graphic中的面要素。3D SceneView不支持PictureFillSymbol 。仅在使用MapView时使用它。
+
+    par:FillSymbol
+        SimpleFillSymbol:type: "simple-fill", 用于在MapView或SceneView中渲染2D多边形。它可以填充固体颜色或图案。此外，符号可以有一个可选的轮廓，由SimpleLineSymbol定义。
+    -------------------------------
+//////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
