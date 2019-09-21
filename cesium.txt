@@ -1,0 +1,182 @@
+1创建查看器
+var viewer = new Cesium.Viewer('cesiumContainer');
+
+2左键单击并拖动 - 将相机平移到地球表面。
+右键单击并拖动 - 放大和缩小相机。
+中轮滚动 - 也可以放大和缩小相机。
+中键单击并拖动 - 围绕地球表面上的点旋转相机。
+
+3Viewer默认还附带一些有用的小部件。
+  设置为false隐藏
+Geocoder：一种位置搜索工具，可将摄像机飞到查询位置。默认情况下使用Bing地图数据。
+HomeButton ：将查看器返回默认视图。
+SceneModePicker ：在3D，2D和哥伦布视图（CV）模式之间切换。
+BaseLayerPicker ：选择要在地球上显示的图像和地形。
+NavigationHelpButton ：显示默认的相机控件。
+Animation ：控制视图动画的播放速度。
+CreditsDisplay：显示数据归因。几乎总是需要！
+Timeline ：表示当前时间，并允许用户使用滑块跳转到特定时间。
+FullscreenButton ：使Viewer全屏显示。
+
+4在创建Cesium Viewer的块之前添加
+Cesium.Ion.defaultAccessToken = '<YOUR ACCESS TOKEN HERE>';
+
+5添加地形数据，我们创建了一个CesiumTerrainProvider，指定了一个url和一些配置选项，然后将提供者分配给viewer.terrainProvider。
+
+6确保地形背后的物体被正确遮挡。只能看到最前面的对象
+viewer.scene.globe.depthTestAgainstTerrain = true;
+
+7太阳在此线上的位置启用照明。
+viewer.scene.globe.enableLighting = true;
+
+8基本的Cesium类型：
+Cartesian3 ：3D笛卡尔坐标 - 当用作位置时，它使用地球固定框架（ECEF）以米为单位相对于地球中心
+Cartographic ：由WGS84椭球表面的经度，纬度（弧度）和高度定义的位置
+HeadingPitchRoll：围绕东 - 北 - 上帧中的局部轴的旋转（以弧度表示）。标题是围绕负z轴的旋转。间距是围绕负y轴的旋转。Roll是围绕正x轴的旋转。
+Quaternion ：表示为4D坐标的3D旋转。
+
+
+相机控制
+Camera.setView(options) ：立即将相机设置在特定位置和方向
+Camera.zoomIn(amount) ：沿着视图向量移动摄像机
+Camera.zoomOut(amount) ：沿着视图向量向后移动相机
+Camera.flyTo(options) ：创建从当前摄像机位置到新位置的动画摄像机飞行
+Camera.lookAt(target, offset) ：定向和定位相机以查看具有给定偏移的目标点
+Camera.move(direction, amount) ：向任何方向移动相机
+Camera.rotate(axis, angle) ：围绕任何轴旋转相机
+
+8Cesium提供VelocityOrientationProperty 了基于实体向前和向后采样的位置自动计算方向
+
+9所有建筑都变白并且始终可见
+city.style = defaultStyle;
+ 
+10建筑物透明
+var transparentStyle = new Cesium.Cesium3DTileStyle({
+    color : "color('white', 0.3)",
+    show : true
+});
+
+11着色器
+var heightStyle = new Cesium.Cesium3DTileStyle({
+    color : {
+        conditions : [
+            ["${height} >= 300", "rgba(45, 0, 75, 0.5)"],
+            ["${height} >= 200", "rgb(102, 71, 151)"],
+            ["${height} >= 100", "rgb(170, 162, 204)"],
+            ["${height} >= 50", "rgb(224, 226, 238)"],
+            ["${height} >= 25", "rgb(252, 230, 200)"],
+            ["${height} >= 10", "rgb(248, 176, 87)"],
+            ["${height} >= 5", "rgb(198, 106, 11)"],
+            ["true", "rgb(127, 59, 8)"]
+        ]
+    }
+});
+
+
+12查看器画布上的像素位置返回3D场景中的数据。
+Scene.pick ：返回包含给定窗口位置的基元的对象。
+Scene.drillPick ：返回包含给定窗口位置处所有基元的对象列表。
+Globe.pick ：返回给定光线与地形的交点。
+
+13事件
+var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+handler.setInputAction(function(movement) {}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+14 可见性来隐藏实体 Entity.show 
+
+15一次隐藏或显示所有邻域实体
+     1实体添加到父实体来完成此操作
+     2只使用show属性EntityCollection
+     EntityCollection  一个可观察的Entity实例集合，其中每个实体都具有唯一的ID。
+
+     var neighborhoodsElement =  document.getElementById('neighborhoods');
+      neighborhoodsElement.addEventListener('change', function (e) {
+      neighborhoods.show = e.target.checked;
+      });
+
+       viewer.shadows//切换阴影
+
+16实体
+viewer.entities.add
+传递的对象add为实体提供初始值
+
+17viewer.zoomTo缩放相机以查看实体。 
+
+18 fill属性指定是否填充几何。outline属性指定几何是否已轮廓化。
+
+19指定图像的URL而不是颜色。
+    ellipse.material = '/docs/tutorials/creating-entities/images/cats.jpg';
+
+20将多边形提升到地球上方250,000米。
+wyoming.polygon.height = 250000;
+
+21viewer.zoomTo  ||  viewer.flyTo
+传递给一个Entity，EntityCollection中，DataSource或实体的阵列。
+
+22跟踪实体viewer.trackedEntity = wyoming;
+
+23EntityCollection ：add， remove和removeAll用于管理的实体。
+
+24要获取实体
+var entity = viewer.entities.getOrCreateEntity('uniqueId');
+
+25添加到集合中add
+viewer.entities.add(entity);
+
+26EntityCollection使用此collectionChanged事件：删除或添加实体触发
+
+27单击以选择对象，使用scene.pick和scene.drillPick来检索实体
+
+28创建实体，通过设置position，point和来创建图形点或标签label。
+
+29广告牌
+ billboard : {
+    image : '//cesiumjs.org/tutorials/Visualizing-Spatial-Data/images/Philadelphia_Phillies.png',
+    width : 64,
+    height : 64
+  },
+ 
+30添加3D模型
+viewer.entities.add({
+ model : {
+        uri : '../../../../Apps/SampleData/models/GroundVehicle/GroundVehicle.glb'
+    }
+}
+
+viewer.trackedEntity = entity;//设置摄像头跟踪的实体
+
+31Entity.orientation属性指定a 来控制模型的方向
+
+32requestVertexNormals并在地球上启用照明
+
+33requestWaterMask以下类似方式启用水效果：
+
+
+相机行为
+  左键拖动	旋转全球
+  右键单击并拖动	放大和缩小
+  中轮滚动	放大和缩小
+  中键点击+拖动	倾斜地球
+
+ 1通过该setView功能以编程方式设置摄像机的位置和方向
+  2destination可以是一个Cartesian3或Rectangle
+  3orientation可以是heading/ pitch/ roll或direction/ up。航向角，俯仰角和横滚角以弧度定义
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
